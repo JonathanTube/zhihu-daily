@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rem</title>
+    <style type="text/css">
+      html {
+        /* 设置100px = 1rem */
+        font-size: 100px;
+      }
+      body {
+        padding: 0;
+        margin: 0;
+      }
+      #root {
+        margin: 0 auto;
+        /* 强制容器最大宽度750 */
+        max-width: 750px;
+      }
+      .box {
+        background: red;
+        /* 这里直接就可以使用4rem = 400px */
+        width: 2rem;
+        height: 1rem;
+        font-size: 0.16rem;
+        color: #fff;
+      }
+    </style>
+    <script>
+      ;(() => {
+        const calcBaseFontSize = () => {
+          let html = document.documentElement // 这个拿到的就是html对象dom
+          let deviceWidth = html.clientWidth
+          // 大于750，依旧按照750计算
+          let designWidth = deviceWidth > 750 ? 750 : deviceWidth // 设计尺寸
+          let newFontSize = (deviceWidth / designWidth) * 100
+          html.style.fontSize = newFontSize
+        }
+        // 每次尺寸编号，重新计算html中的fontSize
+        window.addEventListener("resize", () => {
+          calcBaseFontSize()
+        })
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root">
+      <div class="box">Hello World</div>
+    </div>
+  </body>
+</html>
