@@ -165,7 +165,11 @@ module.exports = function (webpackEnv) {
                       },
                       stage: 3
                     }
-                  ]
+                  ],
+                  postpx2rem({
+                    rootValue: 75, // 1rem = 75px
+                    propList: ["*"] // 对所有文件生效
+                  })
                 ]
           },
           sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment

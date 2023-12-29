@@ -1,5 +1,2 @@
-import { styled } from "styled-components"
-
-export const PersonalContainer = styled.div`
-  background: red;
-`
+import styled from "../../assets/styled-px2rem"
+export const PersonalContainer = styled.div``

@@ -1,5 +1,2 @@
-import { styled } from "styled-components"
-
-export const LoginContainer = styled.div`
-  background: red;
-`
+import styled from "../../assets/styled-px2rem"
+export const LoginContainer = styled.div``
