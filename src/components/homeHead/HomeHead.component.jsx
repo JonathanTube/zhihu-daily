@@ -25,8 +25,8 @@ export default function HomeHead(props) {
       "十二"
     ]
     return {
-      month: cnMonth[month],
-      day
+      month: cnMonth[parseInt(month)],
+      day: parseInt(day)
     }
   }, [today])
   return (
@@ -34,7 +34,7 @@ export default function HomeHead(props) {
       <InfoBox>
         <div className="time">
           <span>{time.day}</span>
-          <span>{time.month}</span>
+          <span>{time.month}月</span>
         </div>
         <h2 className="title">知乎日报</h2>
       </InfoBox>

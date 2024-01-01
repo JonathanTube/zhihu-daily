@@ -1,5 +1,5 @@
-import httpUtils from "./http.utils"
+import http from "./http.utils"
 
-const queryNewsLatest = () => {
-  return httpUtils.get("/api/news_latest")
+export const queryNewsLatest = () => {
+  return http.get("/api/news_latest")
 }

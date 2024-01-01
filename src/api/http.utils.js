@@ -1,122 +1,123 @@
 import qs from "qs"
-import { message } from "antd-mobile"
+import { Toast } from "antd-mobile"
+import { isPlainObject } from "../assets/utils.js"
 
-const { stringify } = qs
-
-const checkStatus = (res) => {
-  if (200 >= res.status < 300) {
-    return res
+const http = function http(config) {
+  if (!isPlainObject(config)) {
+    config = {}
   }
-  message.error(`网络请求失败,${res.status}`)
-  const error = new Error(res.statusText)
-  error.response = response
-  throw error
-}
-
-/**
- *  捕获成功登录过期状态码等
- * @param res
- * @returns {*}
- */
-const judgeOkState = async (res) => {
-  const cloneRes = await res.clone().json()
-  //TODO:可以在这里管控全局请求
-  if (cloneRes.code !== 200) {
-    message.error(`${cloneRes.msg}${cloneRes.code}`)
-  }
-  return res
-}
-
-/**
- * 捕获失败
- * @param error
- */
-const handleError = (error) => {
-  if (error instanceof TypeError) {
-    message.error(`网络请求失败啦！${error}`)
-  }
-  return {
-    //防止页面崩溃，因为每个接口都有判断res.code以及data
-    code: -1,
-    data: false
-  }
-}
-
-class http {
-  /**
-   *静态的fetch请求通用方法
-   * @param url
-   * @param options
-   * @returns {Promise<unknown>}
-   */
-  static async staticFetch(url = "", options = {}) {
-    const defaultOptions = {
-      /*允许携带cookies*/
+  config = Object.assign(
+    {
+      url: "",
+      method: "GET",
+      /**
+       * fetch方法默认是不携带cookie的，如果需要携带cookie，加上以下字段即可，
+       * 跨域申请中需要带有cookie时，
+       * 可在fetch方法的第二个参数对象中增加credentials属性，并将值设置为”include”。
+       *
+       * include：发送请求时，包括凭据（如cookie和HTTP认证信息）
+       * omit：发送请求时，仅包括同源凭据（如cookie和HTTP认证信息）
+       * same-origin：发送请求时，不包括凭据（如cookie和HTTP认证信息）
+       */
       credentials: "include",
-      /*允许跨域**/
-      mode: "cors",
-      headers: {
-        token: null,
-        Authorization: null
-        // 当请求方法是POST，如果不指定content-type是其他类型的话，默认为如下↓，要求参数传递样式为 key1=value1&key2=value2，但实际场景以json为多
-        // 'content-type': 'application/x-www-form-urlencoded',
+      headers: null,
+      params: null,
+      body: null,
+      responseType: "json",
+      signal: null // signal 中断请求的信号
+    },
+    config
+  )
+  if (!config.url) throw new TypeError("config.url can not be empty")
+  if (!isPlainObject(config.headers)) config.headers = {}
+
+  if (config.params !== null && !isPlainObject(config.params))
+    config.params = null
+
+  let { url, method, credentials, headers, params, body, responseType } = config
+  if (params) {
+    let connector = url.indexOf("?") !== -1 ? "&" : "?"
+    url = `${url}${connector}${qs.stringify(params)}`
+  }
+
+  if (isPlainObject(body)) {
+    body = qs.stringify(body)
+    header["content-type"] = "application/x-www-form-urlencoded"
+  }
+
+  let token = localStorage.getItem("token")
+  if (token) headers["authorization"] = token
+
+  method = method.toUpperCase()
+  config = {
+    method,
+    credentials,
+    headers,
+    cache: "no-cache"
+  }
+
+  if (/^(POST|PUT|PATCH)$/i.test(method) && body) {
+    config.body = body
+  }
+  return fetch(url, config)
+    .then((response) => {
+      console.log(response)
+      let { status, statusText } = response
+      if (/^(2|3)\d{2}$/.test(status)) {
+        let result
+        switch (responseType.toLowerCase()) {
+          case "text":
+            result = response.text()
+            break
+
+          case "arraybuffer":
+            result = response.arrayBuffer()
+            break
+
+          case "blob":
+            result = response.blob()
+            break
+
+          default:
+            result = response.json()
+        }
+        return result
       }
-    }
-    if (options.method === "POST" || "PUT") {
-      defaultOptions.headers["Content-Type"] = "application/json; charset=utf-8"
-    }
-    const newOptions = { ...defaultOptions, ...options }
-    console.log("newOptions", newOptions)
-    return fetch(url, newOptions)
-      .then(checkStatus)
-      .then(judgeOkState)
-      .then((res) => res.json())
-      .catch(handleError)
-  }
-
-  /**
-   *post请求方式
-   * @param url
-   * @returns {Promise<unknown>}
-   */
-  post(url, params = {}, option = {}) {
-    const options = Object.assign({ method: "POST" }, option)
-    //一般我们常用场景用的是json，所以需要在headers加Content-Type类型
-    options.body = stringify(params)
-
-    //可以是上传键值对形式，也可以是文件，使用append创造键值对数据
-    if (options.type === "FormData" && options.body !== "undefined") {
-      let params = new FormData()
-      for (let key of Object.keys(options.body)) {
-        params.append(key, options.body[key])
-      }
-      options.body = params
-    }
-    return http.staticFetch(url, options) //类的静态方法只能通过类本身调用
-  }
-
-  /**
-   * put方法
-   * @param url
-   * @returns {Promise<unknown>}
-   */
-  put(url, params = {}, option = {}) {
-    const options = Object.assign({ method: "PUT" }, option)
-    options.body = JSON.stringify(params)
-    return http.staticFetch(url, options) //类的静态方法只能通过类本身调用
-  }
-
-  /**
-   * get请求方式
-   * @param url
-   * @param option
-   */
-  get(url, option = {}) {
-    const options = Object.assign({ method: "GET" }, option)
-    return http.staticFetch(url, options)
-  }
+      return Promise.reject({
+        code: -100,
+        status,
+        statusText
+      })
+    })
+    .catch((err) => {
+      Toast.show({
+        icon: "fail",
+        content: "接口请求异常"
+      })
+      return Promise.reject(err)
+    })
 }
 
-const httpUtils = new http() //new生成实例
-export const { post, get, put } = httpUtils
-export default httpUtils
+;["GET", "HEAD", "DELETE", "OPTIONS"].forEach((item) => {
+  http[item.toLowerCase()] = (url, config) => {
+    if (!isPlainObject(config)) {
+      config = {}
+    }
+    config.method = item
+    config.url = url
+    return http(config)
+  }
+})
+;["POST", "PUT", "PATCH"].forEach((item) => {
+  http[item.toLowerCase()] = (url, body, config) => {
+    if (!isPlainObject(config)) {
+      config = {}
+    }
+    config.method = item
+    config.url = url
+    config.body = body
+    return http(config)
+  }
+})
+
+export default http
