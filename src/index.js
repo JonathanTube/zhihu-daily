@@ -17,11 +17,11 @@ import store from "./store"
 
 const root = ReactDOM.createRoot(document.getElementById("root"))
 root.render(
-  <React.StrictMode>
-    <ConfigProvider locale={zhCN}>
-      <Provider store={store}>
-        <App />
-      </Provider>
-    </ConfigProvider>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <ConfigProvider locale={zhCN}>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </ConfigProvider>
+  // </React.StrictMode>
 )

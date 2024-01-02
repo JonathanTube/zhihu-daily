@@ -61,7 +61,7 @@ const http = function http(config) {
   }
   return fetch(url, config)
     .then((response) => {
-      console.log(response)
+      // console.log(response)
       let { status, statusText } = response
       if (/^(2|3)\d{2}$/.test(status)) {
         let result

@@ -41,4 +41,25 @@ export const HomeContainer = styled.div`
       }
     }
   }
+
+  .loadmore-box {
+    background: #eee;
+    text-align: center;
+    height: 80px;
+    line-height: 80px;
+    font-size: 24px;
+    color: #999;
+
+    .amd-dot-loading {
+      position: static;
+      transform: none;
+      top: 0;
+      left: 0;
+      font-size: 32px;
+    }
+  }
+
+  .news-box {
+    padding: 10px 30px;
+  }
 `

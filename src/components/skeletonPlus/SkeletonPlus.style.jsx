@@ -1,5 +1,7 @@
-import { styled } from "styled-px2rem"
+import styled from "../../assets/styled-px2rem"
 
-const SkeletonPlusBox = styled.div``
+const SkeletonPlusBox = styled.div`
+  padding: 20px 30px;
+`
 
 export default SkeletonPlusBox

@@ -6,7 +6,7 @@ import logo from "../../assets/images/avatar.jpg"
 import { useMemo } from "react"
 export default function HomeHead(props) {
   let { today } = props
-  console.log(today)
+  // console.log(today)
   let time = useMemo(() => {
     let [_, month, day] = today.match(/^\d{4}(\d{2})(\d{2})$/)
     let cnMonth = [
