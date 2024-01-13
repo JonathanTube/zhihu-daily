@@ -7,3 +7,7 @@ export const queryBanners = () => {
 export const queryNewsLatest = () => {
   return http.get("/api/news_latest")
 }
+
+export const queryNewsDetail = (id) => {
+  return http.get(`/api/detail/${id}`)
+}

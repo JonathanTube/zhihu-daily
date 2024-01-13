@@ -1,6 +1,6 @@
 import SkeletonPlusBox from "./SkeletonPlus.style"
 import { Skeleton } from "antd-mobile"
-export default function NewsItem() {
+export default function SkeletonPlus() {
   return (
     <SkeletonPlusBox>
       <Skeleton.Title animated />
